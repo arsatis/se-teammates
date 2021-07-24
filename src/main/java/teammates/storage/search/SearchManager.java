@@ -14,6 +14,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
 import teammates.common.datatransfer.attributes.EntityAttributes;
@@ -80,7 +81,9 @@ abstract class SearchManager<T extends EntityAttributes<?>> {
 
         try {
             log.info("Query: " + query.getQuery());
-            log.info("FQ: " + String.join(",", query.getFilterQueries()));
+            if (query.getFilterQueries() != null) {
+                log.info("FQ: " + String.join(",", query.getFilterQueries()));
+            }
             response = client.query(getCollectionName(), query);
         } catch (SolrServerException e) {
             Throwable rootCause = e.getRootCause();
@@ -226,17 +229,14 @@ abstract class SearchManager<T extends EntityAttributes<?>> {
 
     abstract void sortResult(List<T> result);
 
-    List<T> convertDocumentToAttributes(QueryResponse response) {
-        if (response == null) {
+    List<T> convertDocumentToAttributes(List<SolrDocument> documents) {
+        if (documents == null) {
             return new ArrayList<>();
         }
 
         List<T> result = new ArrayList<>();
 
-        for (SolrDocument document : response.getResults()) {
-            String courseId = (String) document.getFirstValue("courseId");
-            String email = (String) document.getFirstValue("email");
-            log.info(String.format("Converting document: %s/%s)", courseId, email));
+        for (SolrDocument document : documents) {
             T attribute = getAttributeFromDocument(document);
             if (attribute == null) {
                 // search engine out of sync as SearchManager may fail to delete documents
