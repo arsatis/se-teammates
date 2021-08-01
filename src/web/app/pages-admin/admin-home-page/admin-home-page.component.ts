@@ -57,6 +57,12 @@ export class AdminHomePageComponent {
         continue;
       }
 
+      const re = /[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\.[a-z]{2,3}/;
+      if (!re.test(instructorDetailSplit[1])) {
+        this.multipleForm = { hasError: true, errorMessage: 'Please provide valid email(s) for all instructor(s).' };
+        return;
+      }
+
       this.multipleForm = { hasError: false, errorMessage: '' }; // resets error message
       this.instructorsConsolidated.push({
         name: instructorDetailSplit[0],
