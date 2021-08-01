@@ -33,6 +33,9 @@ export class AdminHomePageComponent {
 
   isAddingInstructors: boolean = false;
 
+  singleForm: any = { hasError: false, errorMessage: '' };
+  multipleForm: any = { hasError: false, errorMessage: '' };
+
   constructor(private accountService: AccountService) {}
 
   /**
@@ -43,15 +46,18 @@ export class AdminHomePageComponent {
     for (const instructorDetail of this.instructorDetails.split(/\r?\n/)) {
       const instructorDetailSplit: string[] = instructorDetail.split(/[|\t]/).map((item: string) => item.trim());
       if (instructorDetailSplit.length < 3) {
-        // TODO handle error
+        this.multipleForm = { hasError: true, errorMessage: 'Please ensure that all 3 details have been provided.' };
         invalidLines.push(instructorDetail);
         continue;
       }
+
       if (!instructorDetailSplit[0] || !instructorDetailSplit[1] || !instructorDetailSplit[2]) {
-        // TODO handle error
+        this.multipleForm = { hasError: true, errorMessage: 'Please ensure that all 3 details have been provided.' };
         invalidLines.push(instructorDetail);
         continue;
       }
+
+      this.multipleForm = { hasError: false, errorMessage: '' }; // resets error message
       this.instructorsConsolidated.push({
         name: instructorDetailSplit[0],
         email: instructorDetailSplit[1],
@@ -67,9 +73,17 @@ export class AdminHomePageComponent {
    */
   validateAndAddInstructorDetail(): void {
     if (!this.instructorName || !this.instructorEmail || !this.instructorInstitution) {
-      // TODO handle error
+      this.singleForm = { hasError: true, errorMessage: 'Please fill in all fields.' };
       return;
     }
+
+    const re = /[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\.[a-z]{2,3}/;
+    if (!re.test(this.instructorEmail)) {
+      this.singleForm = { hasError: true, errorMessage: 'Please provide a valid email.' };
+      return;
+    }
+
+    this.singleForm = { hasError: false, errorMessage: '' }; // resets error message
     this.instructorsConsolidated.push({
       name: this.instructorName,
       email: this.instructorEmail,

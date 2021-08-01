@@ -8,6 +8,8 @@
       <textarea class="form-control" id="instructor-details-single-line" [(ngModel)]="instructorDetails"></textarea>
     </div>
 
+    <div class="top-padded error-message" *ngIf="multipleForm.hasError">{{ multipleForm.errorMessage }}</div>
+
     <div class="top-padded">
       <button class="btn btn-primary" id="add-instructor-single-line" (click)="validateAndAddInstructorDetails()">Add Instructors</button>
     </div>
@@ -34,6 +36,8 @@
       <strong>Institution: </strong>
       <input class="form-control" type="text" id="instructor-institution" [(ngModel)]="instructorInstitution">
     </div>
+
+    <div class="top-padded error-message" *ngIf="singleForm.hasError">{{ singleForm.errorMessage }}</div>
 
     <div class="top-padded">
       <button class="btn btn-primary" id="add-instructor" (click)="validateAndAddInstructorDetail()">Add Instructor</button>
